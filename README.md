@@ -55,34 +55,80 @@ npm test           # тесты калькулятора
 
 После правок пересоберите сайт — GitHub Actions сделает это сам при push.
 
-## 3. Заявки без сервера
+## 3. Заявки: Telegram, WhatsApp, почта
 
-Форма работает всегда, но есть два режима.
+Форма всегда проверяет поля и собирает текст заявки. Дальше — по настройке в
+`content/site.ts` → `formConfig`, режимы по приоритету:
 
-**По умолчанию — WhatsApp.** Форма проверяет поля, собирает текст заявки и
-показывает кнопку «Отправить в WhatsApp» с уже заполненным сообщением. Номер
-берётся из `settings.phone`. Ничего настраивать не нужно, регистраций нет.
+1. `telegram.proxyUrl` — заявка уходит на ваш прокси, тот пересылает в Telegram;
+2. `telegram.botToken` + `telegram.chatId` — браузер шлёт сообщение напрямую в
+   Bot API Telegram;
+3. `web3forms.endpoint` — заявка приходит письмом на почту;
+4. ничего не заполнено — экран «отправьте в WhatsApp» с готовым текстом.
+
+### Telegram — 5 минут
+
+1. В Telegram откройте **@BotFather** → `/newbot` → придумайте имя и адрес
+   (например `linia_kislovodsk_bot`). BotFather пришлёт **токен** вида
+   `1234567890:AAE...`.
+2. Напишите своему новому боту любое сообщение — «привет». Без этого бот не
+   имеет права писать вам первым.
+3. Узнайте свой `chat_id`:
+
+   ```bash
+   npm run telegram:chat -- 1234567890:AAE...
+   ```
+
+   Скрипт покажет бота и список чатов; нужное число — `chat_id`.
+4. Впишите в `content/site.ts`:
+
+   ```ts
+   export const formConfig = {
+     telegram: {
+       botToken: "1234567890:AAE...",
+       chatId: "123456789",
+       proxyUrl: "",
+     },
+     whatsapp: "",
+     web3forms: { endpoint: "", accessKey: "" },
+   };
+   ```
+
+5. Проверьте доставку: `npm run telegram:chat -- 1234567890:AAE... --send "Тест"`.
+6. Сделайте `git push` — GitHub Actions пересоберёт сайт, и заявки начнут
+   приходить в чат с ботом.
+
+> **Про безопасность.** В этом режиме токен бота лежит в коде страницы — его
+> технически можно увидеть. Если это смущает, поднимите бесплатный прокси на
+> Cloudflare Workers (код ниже), положите токен в секрет `BOT_TOKEN`, а в
+> `telegram.proxyUrl` укажите адрес воркера. Тогда токен остаётся на сервере
+> Cloudflare, а форма шлёт заявку на воркер и получает подтверждение доставки.
+
+```js
+// Cloudflare Worker: POST { text } → сообщение в Telegram
+export default {
+  async fetch(request, env) {
+    if (request.method !== "POST") return new Response("Method not allowed", { status: 405 });
+    const { text } = await request.json();
+    if (!text) return Response.json({ ok: false }, { status: 400 });
+    const res = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: env.CHAT_ID, text, disable_web_page_preview: true }),
+    });
+    return Response.json({ ok: res.ok }, { status: res.ok ? 200 : 502 });
+  },
+};
+```
 
 > **Обязательно замените заглушки перед запуском:** в `content/site.ts` сейчас
 > стоят `phone: "+7 928 000-00-00"` и `form_email: "hello@linia.example"`.
 > Пока телефон не заменён на настоящий, кнопка WhatsApp ведёт на несуществующий
 > номер.
 
-**Автоматически на почту — Web3Forms** (бесплатно, 250 заявок в месяц):
-
-1. Зайдите на [web3forms.com](https://web3forms.com), укажите почту — придёт
-   access key.
-2. В `content/site.ts` впишите:
-
-```ts
-export const formConfig = {
-  formEndpoint: "https://api.web3forms.com/submit",
-  formAccessKey: "ваш-ключ",
-  whatsapp: "",
-};
-```
-
-После этого заявки будут приходить на почту, а форма покажет «Заявка отправлена».
+**Почта (Web3Forms)** — дополнительный канал, 250 заявок в месяц бесплатно:
+получите access key на [web3forms.com](https://web3forms.com) и впишите его в
+`formConfig.web3forms`.
 
 ## 4. Публикация на GitHub Pages
 

@@ -10,7 +10,8 @@
     "preview": "node scripts/preview.mjs",
     "lint": "eslint .",
     "test": "node --test --test-isolation=none tests/calculator.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "telegram:chat": "node scripts/telegram-chat.mjs"
   },
   "dependencies": {
     "@fontsource/onest": "^5.3.1",
