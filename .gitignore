@@ -23,8 +23,14 @@ data/
 .pnpm-store/
 .dsh-vision-scratch/
 .taste-skill/
-assets/
-фото для публикации/
+/assets/
+/фото для публикации/
+
+# в public/assets лежит дизайн-кит, сайту нужны только эти папки
+/public/assets/*
+!/public/assets/img/
+!/public/assets/moments/
+/public/uploads/
 
 # мусор ОС и редакторов
 .DS_Store
