@@ -1,0 +1,31 @@
+{
+  "name": "linia",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Статический лендинг ремонтной компании «ЛИНИЯ» — Кисловодск и Кавказские Минеральные Воды",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && node scripts/postbuild.mjs",
+    "preview": "node scripts/preview.mjs",
+    "lint": "eslint .",
+    "test": "node --test --test-isolation=none tests/calculator.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/onest": "^5.3.1",
+    "@fontsource/source-serif-4": "^5.3.1",
+    "next": "15.5.9",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@types/node": "22.20.4",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.9",
+    "typescript": "^5.9.2"
+  }
+}

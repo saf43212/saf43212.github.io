@@ -1,0 +1,32 @@
+# зависимости
+node_modules/
+
+# сборка Next.js и статический экспорт
+.next/
+out/
+
+# секреты и локальные настройки
+.env
+.env.local
+.env*.local
+!.env.example
+
+# рабочие артефакты и бэкапы
+.shots/
+deploy/
+data/
+*.log
+
+# локальное окружение и сырьё
+.mcp/
+.npm-cache/
+.pnpm-store/
+.dsh-vision-scratch/
+.taste-skill/
+assets/
+фото для публикации/
+
+# мусор ОС и редакторов
+.DS_Store
+Thumbs.db
+tsconfig.tsbuildinfo
