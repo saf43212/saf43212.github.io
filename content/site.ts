@@ -38,11 +38,12 @@ export type ProjectItem = {
 /**
  * Адрес сайта: нужен для canonical, Open Graph и sitemap.xml.
  *
- * Пока домен не подключён — технический адрес GitHub Pages. Когда DNS
- * домена будет направлен на GitHub, поменяйте строку на "https://liniakmw.ru"
- * (подробнее — README, раздел «Домен и HTTPS»).
+ * Боевой адрес — собственный домен компании: он попадает в canonical,
+ * Open Graph, robots.txt, sitemap.xml и в файл CNAME для GitHub Pages.
+ * Технический адрес GitHub Pages остаётся запасным: сайт продолжает
+ * открываться и по нему.
  */
-export const siteUrl = "https://saf43212.github.io";
+export const siteUrl = "https://liniya-remont.ru";
 
 /**
  * Куда уходят заявки.

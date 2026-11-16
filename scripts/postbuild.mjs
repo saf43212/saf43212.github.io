@@ -30,11 +30,15 @@ try {
 }
 
 const isTechnicalHost = host === "" || host === "linia.example" || host.endsWith(".github.io");
+const cname = path.join(out, "CNAME");
 
 if (isTechnicalHost) {
+  // Устаревший CNAME от прошлой сборки со своим доменом тоже убираем: иначе
+  // GitHub Pages привяжется к домену, который больше не является боевым.
+  if (fs.existsSync(cname)) fs.rmSync(cname);
   console.log(`CNAME не создан: технический адрес ${host || "(пусто)"}`);
 } else {
-  fs.writeFileSync(path.join(out, "CNAME"), `${host}\n`);
+  fs.writeFileSync(cname, `${host}\n`);
   console.log(`CNAME: ${host}`);
 }
 
