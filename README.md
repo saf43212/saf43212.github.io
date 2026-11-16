@@ -90,9 +90,9 @@ npm test           # тесты калькулятора
 
 > **Про безопасность.** Прокси на Cloudflare Workers уже развёрнут:
 > `https://linia-leads.danildanil89741.workers.dev` (адрес прописан в
-> `formConfig.telegram.proxyUrl`). Токен бота и chat_id хранятся в секретах
-> воркера — `BOT_TOKEN` и `CHAT_ID` — в коде сайта их нет. Заявка уходит на
-> воркер, он пересылает её в Telegram и возвращает подтверждение доставки.
+> `formConfig.telegram.proxyUrl`), секреты `BOT_TOKEN` и `CHAT_ID` заданы —
+> в коде сайта токена нет. Заявка уходит на воркер, он пересылает её в Telegram
+> и возвращает подтверждение доставки.
 >
 > Секреты задаются в панели Cloudflare → Workers & Pages → `linia-leads` →
 > Settings → Variables, либо через API:
