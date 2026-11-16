@@ -1,14 +1,14 @@
 /**
  * Отправка заявки со статического сайта.
  *
- * Своего сервера у лендинга нет, поэтому режимы такие:
- * 1) настроен `formConfig.telegram.proxyUrl` — заявка уходит на ваш прокси
- *    (Cloudflare Worker), он пересылает её в Telegram. Токен бота спрятан;
- * 2) заполнены `telegram.botToken` + `telegram.chatId` — браузер отправляет
- *    сообщение напрямую в Bot API (запрос непрозрачный, токен виден в коде);
- * 3) настроен `web3forms` — заявка уходит письмом на почту;
- * 4) ничего не настроено — форма показывает готовое сообщение и кнопку
- *    «Отправить в WhatsApp». Ничего не теряется и не притворяется отправленным.
+ * Своего сервера у лендинга нет, поэтому заявка уходит одним из способов:
+ * 1) на прокси `formConfig.telegram.proxyUrl` (Cloudflare Worker), который
+ *    пересылает её в Telegram. Токен бота остаётся в секретах воркера;
+ * 2) напрямую в Telegram Bot API, если вписаны `telegram.botToken` и `chatId`;
+ * 3) письмом через Web3Forms, если настроен `web3forms`.
+ *
+ * Если ничего не настроено или канал не ответил, форма честно сообщает об
+ * ошибке и предлагает позвонить — заявка не притворяется отправленной.
  */
 import { formConfig, settings } from "@/content/site";
 
@@ -21,10 +21,10 @@ export type LeadPayload = {
   page: string;
 };
 
-export type SubmitResult =
-  | { ok: true; mode: "sent" }
-  | { ok: true; mode: "manual"; whatsapp: string; text: string }
-  | { ok: false; error: string };
+export type SubmitResult = { ok: true; mode: "sent" } | { ok: false; error: string };
+
+export const SUBMIT_ERROR =
+  "Не удалось отправить заявку. Позвоните нам — телефон в шапке сайта.";
 
 export function buildLeadText(payload: LeadPayload): string {
   const lines = [
@@ -38,22 +38,10 @@ export function buildLeadText(payload: LeadPayload): string {
   return lines.join("\n");
 }
 
-/** Номер для WhatsApp: сначала formConfig.whatsapp, иначе — телефон из настроек. */
-export function whatsappNumber(): string {
-  const source = formConfig.whatsapp || settings.phone || "";
-  return source.replace(/\D/g, "");
-}
-
-export function whatsappLink(text: string): string {
-  const number = whatsappNumber();
-  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
-}
-
 /** Сообщение в Telegram напрямую из браузера. Ответ у no-cors запроса непрозрачный. */
 async function sendDirectToTelegram(text: string): Promise<void> {
   const { botToken, chatId } = formConfig.telegram;
-  const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-  await fetch(url, {
+  await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
     method: "POST",
     mode: "no-cors",
     body: new URLSearchParams({
@@ -68,7 +56,7 @@ export async function submitLead(payload: LeadPayload): Promise<SubmitResult> {
   const text = buildLeadText(payload);
   const tg = formConfig.telegram;
 
-  // 1. Прокси: знаем результат, токен не раскрыт.
+  // 1. Прокси: знаем результат доставки, токен не раскрыт.
   if (tg.proxyUrl) {
     try {
       const res = await fetch(tg.proxyUrl, {
@@ -81,8 +69,7 @@ export async function submitLead(payload: LeadPayload): Promise<SubmitResult> {
       if (data && data.ok === false) throw new Error("proxy rejected");
       return { ok: true, mode: "sent" };
     } catch {
-      // Telegram/прокси недоступны — не теряем заявку, отдаём готовый WhatsApp.
-      return { ok: true, mode: "manual", whatsapp: whatsappLink(text), text };
+      return { ok: false, error: SUBMIT_ERROR };
     }
   }
 
@@ -92,8 +79,7 @@ export async function submitLead(payload: LeadPayload): Promise<SubmitResult> {
       await sendDirectToTelegram(text);
       return { ok: true, mode: "sent" };
     } catch {
-      // Сеть/блокировка — не теряем заявку, отдаём готовый WhatsApp.
-      return { ok: true, mode: "manual", whatsapp: whatsappLink(text), text };
+      return { ok: false, error: SUBMIT_ERROR };
     }
   }
 
@@ -117,13 +103,10 @@ export async function submitLead(payload: LeadPayload): Promise<SubmitResult> {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return { ok: true, mode: "sent" };
     } catch {
-      return {
-        ok: false,
-        error: "Не удалось отправить заявку. Позвоните нам — телефон в шапке сайта.",
-      };
+      return { ok: false, error: SUBMIT_ERROR };
     }
   }
 
-  // 4. Ничего не настроено — WhatsApp.
-  return { ok: true, mode: "manual", whatsapp: whatsappLink(text), text };
+  // 4. Ничего не настроено.
+  return { ok: false, error: SUBMIT_ERROR };
 }

@@ -3,9 +3,8 @@
 /**
  * Форма заявки.
  *
- * Сайт статический: если не настроен внешний endpoint (см. content/site.ts),
- * форма собирает готовый текст и предлагает отправить его в WhatsApp —
- * без сервера и без регистраций.
+ * Сайт статический: заявка уходит на прокси Telegram (см. content/site.ts),
+ * форма показывает «отправлено» только после подтверждения доставки.
  *
  * Поля по брифу: имя, телефон, почта (необязательно), город, комментарий,
  * тип ремонта, площадь, предварительный расчёт.
@@ -52,7 +51,6 @@ export function LeadForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
   const [errorText, setErrorText] = useState("");
-  const [manual, setManual] = useState<{ whatsapp: string; text: string } | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -116,48 +114,8 @@ export function LeadForm({
       return;
     }
 
-    if (result.mode === "manual") {
-      setManual({ whatsapp: result.whatsapp, text: result.text });
-    }
-
     setStatus("sent");
     form.reset();
-  }
-
-  if (status === "sent" && manual) {
-    return (
-      <div className="form" role="status" aria-live="polite">
-        <div className="form__full" style={{ display: "grid", gap: "1rem" }}>
-          <p className="t-lead" style={{ margin: 0 }}>
-            Заявка готова — остался один шаг.
-          </p>
-          <p className="t-small muted" style={{ margin: 0 }}>
-            Нажмите кнопку: откроется WhatsApp с уже заполненным сообщением.
-            Отправьте его — и мы перезвоним в течение рабочего дня.
-          </p>
-          <div className="btn-row">
-            <a
-              className="btn btn--primary"
-              href={manual.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Отправить в WhatsApp
-            </a>
-            <button
-              className="btn btn--ghost"
-              type="button"
-              onClick={() => {
-                setManual(null);
-                setStatus("idle");
-              }}
-            >
-              Изменить данные
-            </button>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   if (status === "sent") {
