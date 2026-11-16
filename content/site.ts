@@ -61,12 +61,12 @@ export const siteUrl = "https://saf43212.github.io";
  */
 export const formConfig = {
   telegram: {
-    /** Токен из @BotFather, вида 1234567890:AA... */
+    /** Токен из @BotFather — нужен только если шлём напрямую, без прокси. */
     botToken: "",
-    /** Ваш chat_id: число, для групп начинается с минуса. */
+    /** Ваш chat_id — нужен только для прямой отправки. */
     chatId: "",
-    /** Необязательно: URL прокси, скрывающего токен бота. */
-    proxyUrl: "",
+    /** Прокси на Cloudflare Workers: токен бота хранится там, а не в коде сайта. */
+    proxyUrl: "https://linia-leads.danildanil89741.workers.dev",
   },
   /**
    * Номер для WhatsApp в формате 7XXXXXXXXXX, без плюса и пробелов.

@@ -81,10 +81,8 @@ export async function submitLead(payload: LeadPayload): Promise<SubmitResult> {
       if (data && data.ok === false) throw new Error("proxy rejected");
       return { ok: true, mode: "sent" };
     } catch {
-      return {
-        ok: false,
-        error: "Не удалось отправить заявку. Позвоните нам — телефон в шапке сайта.",
-      };
+      // Telegram/прокси недоступны — не теряем заявку, отдаём готовый WhatsApp.
+      return { ok: true, mode: "manual", whatsapp: whatsappLink(text), text };
     }
   }
 

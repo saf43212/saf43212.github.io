@@ -98,25 +98,37 @@ npm test           # тесты калькулятора
 6. Сделайте `git push` — GitHub Actions пересоберёт сайт, и заявки начнут
    приходить в чат с ботом.
 
-> **Про безопасность.** В этом режиме токен бота лежит в коде страницы — его
-> технически можно увидеть. Если это смущает, поднимите бесплатный прокси на
-> Cloudflare Workers (код ниже), положите токен в секрет `BOT_TOKEN`, а в
-> `telegram.proxyUrl` укажите адрес воркера. Тогда токен остаётся на сервере
-> Cloudflare, а форма шлёт заявку на воркер и получает подтверждение доставки.
+> **Про безопасность.** Прокси на Cloudflare Workers уже развёрнут:
+> `https://linia-leads.danildanil89741.workers.dev` (адрес прописан в
+> `formConfig.telegram.proxyUrl`). Токен бота и chat_id хранятся в секретах
+> воркера — `BOT_TOKEN` и `CHAT_ID` — в коде сайта их нет. Заявка уходит на
+> воркер, он пересылает её в Telegram и возвращает подтверждение доставки.
+>
+> Секреты задаются в панели Cloudflare → Workers & Pages → `linia-leads` →
+> Settings → Variables, либо через API:
+>
+> ```bash
+> curl -X PUT "https://api.cloudflare.com/client/v4/accounts/<account_id>/workers/scripts/linia-leads/secrets" \
+>   -H "Authorization: Bearer <API_TOKEN>" -H "Content-Type: application/json" \
+>   -d '{"name":"BOT_TOKEN","text":"1234567890:AAE...","type":"secret_text"}'
+> ```
+>
+> Код воркера (для справки — что именно работает на Cloudflare):
 
 ```js
 // Cloudflare Worker: POST { text } → сообщение в Telegram
 export default {
   async fetch(request, env) {
-    if (request.method !== "POST") return new Response("Method not allowed", { status: 405 });
-    const { text } = await request.json();
-    if (!text) return Response.json({ ok: false }, { status: 400 });
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(request) });
+    if (request.method !== "POST") return Response.json({ ok: false }, { status: 405, headers: cors(request) });
+    const { text } = await request.json().catch(() => ({}));
+    if (!text) return Response.json({ ok: false }, { status: 400, headers: cors(request) });
     const res = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: env.CHAT_ID, text, disable_web_page_preview: true }),
     });
-    return Response.json({ ok: res.ok }, { status: res.ok ? 200 : 502 });
+    return Response.json({ ok: res.ok }, { status: res.ok ? 200 : 502, headers: cors(request) });
   },
 };
 ```
