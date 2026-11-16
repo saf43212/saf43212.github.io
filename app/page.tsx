@@ -6,6 +6,8 @@ import { LeadModal } from "@/components/site/LeadModal";
 import { Actionbar } from "@/components/site/Actionbar";
 import { Calculator } from "@/components/site/Calculator";
 import { Portfolio } from "@/components/site/Portfolio";
+import { designGroups, designTotal } from "@/content/design";
+import { plural } from "@/lib/plural";
 import { getServices, getProjects, getSettings } from "@/lib/site";
 import { ratesFromSettings } from "@/lib/calculator";
 import { cityIn, regionOf, regionOn } from "@/lib/text";
@@ -464,6 +466,59 @@ export default async function HomePage() {
             </div>
 
             <Portfolio items={workItems} />
+          </div>
+        </section>
+
+        {/* ============ 5б. ДИЗАЙН-ПРОЕКТЫ ============ */}
+        <section
+          className="section section--tight design-teaser"
+          aria-labelledby="design-teaser-h"
+        >
+          <div className="wrap">
+            <div className="sec-head">
+              <div className="sec-head__title">
+                <p className="sec-num">Дизайн</p>
+                <h2 id="design-teaser-h">Дизайн-проекты</h2>
+              </div>
+              <div className="sec-head__aside">
+                <p className="t-lead">
+                  Визуализации интерьеров: свет, материалы и мебель до начала
+                  работ. {designTotal}{" "}
+                  {plural(designTotal, ["рендер", "рендера", "рендеров"])} в{" "}
+                  {designGroups.length}{" "}
+                  {plural(designGroups.length, ["серии", "сериях", "сериях"])}.
+                </p>
+              </div>
+            </div>
+
+            <div className="design-teaser__grid">
+              {designGroups.slice(0, 4).map((group) => {
+                const cover = group.items[0];
+                return (
+                  <a
+                    key={group.slug}
+                    className="design-teaser__card"
+                    href="/design/"
+                  >
+                    <img
+                      src={cover.thumb}
+                      alt={cover.alt}
+                      loading="lazy"
+                      decoding="async"
+                      width={cover.width}
+                      height={cover.height}
+                    />
+                    <span>{group.title}</span>
+                  </a>
+                );
+              })}
+            </div>
+
+            <div className="btn-row">
+              <a className="btn btn--ghost btn--lg" href="/design/">
+                Смотреть все дизайн-проекты
+              </a>
+            </div>
           </div>
         </section>
 

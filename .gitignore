@@ -30,6 +30,7 @@ data/
 /public/assets/*
 !/public/assets/img/
 !/public/assets/moments/
+!/public/assets/design/
 /public/uploads/
 
 # мусор ОС и редакторов

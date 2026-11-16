@@ -2629,3 +2629,197 @@ p {
     gap: 0;
   }
 }
+/* ------------------------------------------------------------
+   25. Дизайн-проекты
+   ------------------------------------------------------------ */
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  font-size: var(--t-micro);
+  color: var(--muted);
+}
+
+.crumbs a {
+  color: var(--ink-60);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 160ms var(--ease), border-color 160ms var(--ease);
+}
+
+.crumbs a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink-40);
+}
+
+.design-hero h1 {
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
+  max-width: 16ch;
+}
+
+.filter__count {
+  display: inline-block;
+  margin-left: 0.45rem;
+  font-size: var(--t-micro);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+.design-count {
+  margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
+}
+
+/* Масонри-колонки: рендеры разной ориентации не режутся по сетке. */
+.design-grid {
+  column-count: 2;
+  column-gap: clamp(0.75rem, 1.6vw, 1.25rem);
+}
+
+@media (min-width: 900px) {
+  .design-grid {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 1400px) {
+  .design-grid {
+    column-count: 4;
+  }
+}
+
+.design-card {
+  break-inside: avoid;
+  margin: 0 0 clamp(0.75rem, 1.6vw, 1.25rem);
+}
+
+.design-card__btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.design-card__btn img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--ink-08);
+  transition: opacity 300ms var(--ease), transform 700ms var(--ease);
+}
+
+.design-card__btn:hover img,
+.design-card__btn:focus-visible img {
+  opacity: 0.94;
+  transform: scale(1.012);
+}
+
+.design-card__btn:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 3px;
+}
+
+.design-card__zoom {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 200ms var(--ease), transform 200ms var(--ease);
+}
+
+.design-card__btn:hover .design-card__zoom,
+.design-card__btn:focus-visible .design-card__zoom {
+  opacity: 1;
+  transform: none;
+}
+
+.design-card__caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  font-size: var(--t-micro);
+  color: var(--muted);
+}
+
+.design-card__index {
+  color: var(--ink-40);
+  font-variant-numeric: tabular-nums;
+}
+
+.design-cta__inner {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+}
+
+@media (min-width: 900px) {
+  .design-cta__inner {
+    grid-template-columns: minmax(0, 1.15fr) auto;
+    align-items: end;
+  }
+
+  .design-cta__inner .btn-row {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 767px) {
+  .design-card__zoom {
+    display: none;
+  }
+}
+
+/* Тизер дизайн-проектов на главной */
+.design-teaser__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.6vw, 1.25rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+@media (min-width: 900px) {
+  .design-teaser__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.design-teaser__card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--ink-08);
+}
+
+.design-teaser__card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform 700ms var(--ease);
+}
+
+.design-teaser__card:hover img {
+  transform: scale(1.03);
+}
+
+.design-teaser__card span {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 2.5rem 0.9rem 0.75rem;
+  font-size: var(--t-micro);
+  color: var(--paper);
+  background: linear-gradient(to top, color-mix(in srgb, var(--ink) 78%, transparent), transparent);
+}

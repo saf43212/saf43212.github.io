@@ -7,15 +7,17 @@
  * Настройки приходят пропсом из серверного layout: клиентский компонент
  * не может сам читать базу.
  */
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const NAV = [
-  { href: "#services", label: "Услуги" },
-  { href: "#work", label: "Работы" },
-  { href: "#about", label: "О компании" },
-  { href: "#process", label: "Этапы" },
-  { href: "#calculator", label: "Калькулятор" },
-  { href: "#faq", label: "Вопросы" },
+  { href: "/#services", label: "Услуги" },
+  { href: "/#work", label: "Работы" },
+  { href: "/design/", label: "Дизайн" },
+  { href: "/#about", label: "О компании" },
+  { href: "/#process", label: "Этапы" },
+  { href: "/#calculator", label: "Калькулятор" },
+  { href: "/#faq", label: "Вопросы" },
 ];
 
 export type HeaderSettings = {
@@ -53,16 +55,16 @@ export function Header({ settings }: { settings: HeaderSettings }) {
     <>
       <header className="site-header" data-scrolled={scrolled ? "true" : "false"}>
         <div className="wrap site-header__bar">
-          <a
+          <Link
             className="logo"
-            href="#top"
+            href="/"
             aria-label={`${settings.companyName} — на главную`}
           >
             <svg className="logo__mark" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 20V4l16 16V4" />
             </svg>
             {settings.companyName}
-          </a>
+          </Link>
 
           <nav className="site-header__nav" aria-label="Основная навигация">
             {NAV.map((item) => (
@@ -76,9 +78,9 @@ export function Header({ settings }: { settings: HeaderSettings }) {
             <a className="site-header__phone" href={settings.phoneHref}>
               {settings.phone}
             </a>
-            <a className="btn btn--primary site-header__cta" href="#calculator">
+            <Link className="btn btn--primary site-header__cta" href="/#calculator">
               Рассчитать стоимость
-            </a>
+            </Link>
             <button
               className="burger"
               type="button"
@@ -107,12 +109,12 @@ export function Header({ settings }: { settings: HeaderSettings }) {
           aria-label="Меню"
         >
           <div className="mobile-nav__top">
-            <a className="logo" href="#top" onClick={() => setMenuOpen(false)}>
+            <Link className="logo" href="/" onClick={() => setMenuOpen(false)}>
               <svg className="logo__mark" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 20V4l16 16V4" />
               </svg>
               {settings.companyName}
-            </a>
+            </Link>
             <button
               className="burger"
               type="button"
@@ -145,13 +147,13 @@ export function Header({ settings }: { settings: HeaderSettings }) {
           </nav>
 
           <div className="mobile-nav__foot">
-            <a
+            <Link
               className="btn btn--primary btn--lg btn--wide"
-              href="#calculator"
+              href="/#calculator"
               onClick={() => setMenuOpen(false)}
             >
               Рассчитать стоимость
-            </a>
+            </Link>
             <a className="btn btn--ghost btn--lg btn--wide" href={settings.phoneHref}>
               {settings.phone}
             </a>

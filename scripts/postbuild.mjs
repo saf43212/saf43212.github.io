@@ -10,6 +10,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { lookup } from "node:dns/promises";
 
 const out = path.resolve("out");
 if (!fs.existsSync(out)) {
@@ -38,8 +39,26 @@ if (isTechnicalHost) {
   if (fs.existsSync(cname)) fs.rmSync(cname);
   console.log(`CNAME не создан: технический адрес ${host || "(пусто)"}`);
 } else {
-  fs.writeFileSync(cname, `${host}\n`);
-  console.log(`CNAME: ${host}`);
+  // CNAME включается только когда домен уже резолвится. Если DNS ещё не
+  // направлен на GitHub Pages, файл CNAME переключил бы сайт на мёртвый
+  // домен и уронил бы и технический адрес *.github.io.
+  let resolvable = false;
+  try {
+    const found = await lookup(host);
+    resolvable = Boolean(found?.address);
+  } catch {
+    resolvable = false;
+  }
+
+  if (resolvable) {
+    fs.writeFileSync(cname, `${host}\n`);
+    console.log(`CNAME: ${host}`);
+  } else {
+    if (fs.existsSync(cname)) fs.rmSync(cname);
+    console.warn(
+      `CNAME не создан: ${host} не резолвится. Направьте DNS (A 185.199.108.153/.109.154/.110.155/.111.156 или CNAME на saf43212.github.io) и пересоберите сайт.`
+    );
+  }
 }
 
 console.log(`.nojekyll: да`);

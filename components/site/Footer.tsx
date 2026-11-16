@@ -17,12 +17,13 @@ export type FooterSettings = {
 };
 
 const NAV = [
-  { href: "#services", label: "Услуги" },
-  { href: "#work", label: "Работы" },
-  { href: "#about", label: "О компании" },
-  { href: "#process", label: "Этапы" },
-  { href: "#calculator", label: "Калькулятор" },
-  { href: "#faq", label: "Вопросы" },
+  { href: "/#services", label: "Услуги" },
+  { href: "/#work", label: "Работы" },
+  { href: "/design/", label: "Дизайн" },
+  { href: "/#about", label: "О компании" },
+  { href: "/#process", label: "Этапы" },
+  { href: "/#calculator", label: "Калькулятор" },
+  { href: "/#faq", label: "Вопросы" },
 ];
 
 export function Footer({ settings }: { settings: FooterSettings }) {
@@ -33,12 +34,12 @@ export function Footer({ settings }: { settings: FooterSettings }) {
       <div className="wrap">
         <div className="footer__top">
           <div className="footer__brand">
-            <a className="logo" href="#top" aria-label={`${settings.companyName} — на главную`}>
+            <Link className="logo" href="/" aria-label={`${settings.companyName} — на главную`}>
               <svg className="logo__mark" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 20V4l16 16V4" />
               </svg>
               {settings.companyName}
-            </a>
+            </Link>
             <p className="footer__lede">
               Ремонт и отделка квартир, домов и коммерческих помещений в{" "}
               {cityIn(settings.city)} и на {regionOn(settings.region)}.
@@ -69,7 +70,7 @@ export function Footer({ settings }: { settings: FooterSettings }) {
                 <a href={`mailto:${settings.email}`}>{settings.email}</a>
               </li>
               <li>
-                <a href="#quote">Оставить заявку</a>
+                <Link href="/#quote">Оставить заявку</Link>
               </li>
             </ul>
           </div>
