@@ -76,7 +76,7 @@ export default async function DesignPage() {
               <button className="btn btn--primary btn--lg" type="button" data-lead-open>
                 Оставить заявку
               </button>
-              <a className="btn btn--ghost btn--lg" href={phoneHref}>
+              <a className="btn btn--outline-light btn--lg" href={phoneHref}>
                 {phone}
               </a>
             </div>

@@ -1133,6 +1133,10 @@ p {
 }
 
 .filter {
+  display: inline-flex;
+  align-items: center;
+  /* 44px — минимальная комфортная высота тач-таргета. */
+  min-height: 2.75rem;
   padding: 0.55rem 1.05rem;
   border: 1px solid var(--ink-16);
   border-radius: var(--r-pill);
@@ -2627,6 +2631,19 @@ p {
 
   .footer__col ul {
     gap: 0;
+  }
+
+  /* Текстовые ссылки-стрелки и хлебные крошки на узком экране тоже
+     должны попадаться пальцем, а не только курсором. */
+  .link,
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .logo {
+    min-height: 44px;
   }
 }
 /* ------------------------------------------------------------
