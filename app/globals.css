@@ -2629,6 +2629,8 @@ p {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    /* Короткие подписи вроде «Этапы» иначе не добирают 44px по ширине. */
+    min-width: 44px;
   }
 
   .footer__col ul {
