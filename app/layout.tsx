@@ -1,4 +1,4 @@
-﻿import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import "@fontsource/source-serif-4/cyrillic-400.css";
 import "@fontsource/source-serif-4/cyrillic-600.css";
 import "@fontsource/source-serif-4/latin-400.css";
@@ -14,6 +14,15 @@ import { getSettings } from "@/lib/site";
 import { cityIn } from "@/lib/text";
 import { siteUrl } from "@/content/site";
 import { Reveal } from "@/components/site/Reveal";
+
+/**
+ * Ставит data-js="1" до первой отрисовки.
+ *
+ * Без этого атрибута правила, которые прячут контент до появления
+ * (маска заголовка, невидимые шапки секций), не применяются —
+ * поэтому без JS страница читается как обычно и ничего не «пропадает».
+ */
+const BOOT_SCRIPT = `(function(){document.documentElement.dataset.js="1";})();`;
 
 /** Публичный адрес сайта — для canonical, sitemap и Open Graph. */
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? siteUrl;
@@ -59,6 +68,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
+      </head>
       <body>
         <Reveal />
         {children}

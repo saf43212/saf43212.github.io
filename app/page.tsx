@@ -163,6 +163,10 @@ export default async function HomePage() {
     slug: p.slug,
     title: p.title,
     serviceTitle: p.serviceTitle,
+    location: p.location,
+    area: p.area,
+    duration: p.duration,
+    description: p.description,
     photos: p.photos.map((ph) => ({ file: ph.file, alt: ph.alt })),
   }));
 
@@ -180,7 +184,7 @@ export default async function HomePage() {
                   {city} и {region}
                 </p>
                 <h1 id="hero-h">
-                  Ремонт, в котором каждая деталь имеет значение
+                  Ремонт квартир в {cityIn(city)} со сметой до начала работ
                 </h1>
                 <p className="hero__lead">
                   Ремонт и отделка квартир, домов и коммерческих помещений в{" "}
@@ -224,7 +228,7 @@ export default async function HomePage() {
                   <figcaption className="hero__badge">
                     <span className="hero__badge-label">Подход</span>
                     <span className="hero__badge-text">
-                      Смета и договор до начала работ
+                      Ремонт, в котором каждая деталь имеет значение
                     </span>
                   </figcaption>
                 </figure>
@@ -241,16 +245,21 @@ export default async function HomePage() {
                 <dd>По этапам, с актами</dd>
               </div>
               <div className="hero__fact">
-                <dt>География</dt>
-                <dd>{city} и {region}</dd>
+                <dt>Ставка</dt>
+                <dd>
+                  от {rates.cosmetic.toLocaleString("ru-RU")} ₽/м² за
+                  косметический ремонт
+                </dd>
               </div>
             </dl>
           </div>
         </section>
 
         {/* ============ 2. БЕГУЩАЯ СТРОКА ============ */}
-        <div className="marquee" aria-hidden="true">
-          <div className="marquee__track">
+        {/* Сама лента декоративная и скрыта от скринридеров, но кнопка
+            паузы — нет: WCAG 2.2.2 требует останавливать движение. */}
+        <div className="marquee">
+          <div className="marquee__track" aria-hidden="true">
             <div className="marquee__group">
               {[
                 "Косметический ремонт",
@@ -284,6 +293,36 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
+          <button
+            type="button"
+            className="marquee__toggle"
+            aria-pressed="false"
+            aria-label="Остановить бегущую строку"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+              <rect
+                className="marquee__icon-pause"
+                x="1"
+                y="1"
+                width="3"
+                height="8"
+                fill="currentColor"
+              />
+              <rect
+                className="marquee__icon-pause"
+                x="6"
+                y="1"
+                width="3"
+                height="8"
+                fill="currentColor"
+              />
+              <path
+                className="marquee__icon-play"
+                d="M2 1l7 4-7 4z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
         </div>
 
         {/* ============ 3. О КОМПАНИИ ============ */}
@@ -458,9 +497,9 @@ export default async function HomePage() {
               </div>
               <div className="sec-head__aside">
                 <p className="t-lead">
-                  Фотографии показывают характер работ и типы интерьеров. Это
-                  примеры, а не конкретные сданные объекты — собственные
-                  фотографии появятся после публикации.
+                  Под каждым кадром — характер работ, город, площадь и срок.
+                  Диапазон стоимости считает калькулятор, точную цену даёт смета
+                  после замера.
                 </p>
               </div>
             </div>
