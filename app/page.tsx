@@ -256,8 +256,10 @@ export default async function HomePage() {
         </section>
 
         {/* ============ 2. БЕГУЩАЯ СТРОКА ============ */}
-        <div className="marquee" aria-hidden="true">
-          <div className="marquee__track">
+        {/* Сама лента декоративная и скрыта от скринридеров, но кнопка
+            паузы — нет: WCAG 2.2.2 требует останавливать движение. */}
+        <div className="marquee">
+          <div className="marquee__track" aria-hidden="true">
             <div className="marquee__group">
               {[
                 "Косметический ремонт",
@@ -291,6 +293,36 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
+          <button
+            type="button"
+            className="marquee__toggle"
+            aria-pressed="false"
+            aria-label="Остановить бегущую строку"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+              <rect
+                className="marquee__icon-pause"
+                x="1"
+                y="1"
+                width="3"
+                height="8"
+                fill="currentColor"
+              />
+              <rect
+                className="marquee__icon-pause"
+                x="6"
+                y="1"
+                width="3"
+                height="8"
+                fill="currentColor"
+              />
+              <path
+                className="marquee__icon-play"
+                d="M2 1l7 4-7 4z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
         </div>
 
         {/* ============ 3. О КОМПАНИИ ============ */}

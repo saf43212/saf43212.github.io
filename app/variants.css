@@ -1,0 +1,579 @@
+/* ============================================================
+   ВАРИАНТЫ ДИЗАЙНА — рабочий файл на ветке design/variants.
+   Сюда вынесены палитры и motion-слой, чтобы основная система
+   (app/globals.css) оставалась нетронутой, а варианты
+   переключались атрибутами на <html>:
+
+     <html data-theme="material|mineral" data-motion="line" data-grade="warm">
+
+   Скрипт-загрузчик в app/layout.tsx ставит data-js="1" до первой
+   отрисовки; всё, что прячет контент (маски, невидимые заголовки),
+   висит только под [data-js="1"] — без JS страница читается как есть.
+
+   Для публикации берётся один вариант и переносится в globals.css;
+   этот файл и VariantSwitch затем удаляются.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   A. «МАТЕРИАЛ» — тёплая ось с ролями акцента
+   ------------------------------------------------------------ */
+[data-theme="material"] {
+  /* Тёплый чёрный: тот же визуальный вес (15.24:1 на бумаге),
+     но перестаёт спорить с песком по температуре. */
+  --ink: #1c1a17;
+  --paper: #f2f0ea;
+
+  /* Поверхность и линия — ступень, которой в системе не было. */
+  --surface: #e6dfd2;
+  --line: #d6c8b2;
+
+  /* Акцент разделён на роли:
+     decor  — только линии, точки, номера (1.95:1 — текстом нельзя);
+     accent — заливка на светлом и текст на тёмном (2.84 / 5.45);
+     ink    — текст на бумаге (4.88);
+     strong — акцентный текст и заливка кнопки, белый на нём 5.76;
+     deep   — редкий глубокий тон, иконки (6.44). */
+  --accent-decor: #c0ab8e;
+  --accent: #a58b68;
+  --accent-ink: #7a6547;
+  --accent-strong: #8c5a3c;
+  --accent-deep: #6b5138;
+
+  /* Одна холодная точка опоры на всю страницу (7.00:1 на бумаге). */
+  --mineral: #34565c;
+  /* Приглушённый текст обязан проходить AA и на бумаге, и на извести:
+     #6a6660 давал 5.00 / 4.30 (второе — провал), #625e58 даёт 5.65 / 4.86. */
+  --muted: #625e58;
+
+  /* --ink-60 даёт 4.34:1 — чуть ниже AA для мелкого текста.
+     66% поднимает до 5.67:1, визуально почти незаметно. */
+  --ink-60: color-mix(in srgb, var(--ink) 66%, transparent);
+
+  /* Роли состояния вместо захардкоженных #b4453b и #2f6b45. */
+  --danger: #b4453b; /* 4.78:1 на бумаге */
+  --success: #2f6b45; /* 5.57:1 на бумаге */
+}
+
+/* Номер преимущества живёт в тёмной секции: песок там даёт 5.37:1,
+   но декоративная роль читается чище и весит 7.82:1. */
+[data-theme="material"] .advantage__num {
+  color: var(--accent-decor);
+}
+
+/* В тёмной секции приглушённый серый проваливается (3.09:1) —
+   номер секции и лид переводим на светлую роль. */
+[data-theme="material"] .section--ink .sec-num,
+[data-theme="material"] .section--ink .muted {
+  color: var(--paper-60);
+}
+
+/* Наведение на главную кнопку: белый на песке = 3.23:1 при 15px. */
+[data-theme="material"] .btn--primary:hover,
+[data-theme="material"] .btn--light:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--white);
+}
+
+/* Декоративные штрихи получают свою роль. */
+[data-theme="material"] .sec-num::after {
+  background: var(--line);
+}
+
+[data-theme="material"] .marquee__item::after,
+[data-theme="material"] .hero__kicker::before {
+  background: var(--accent-decor);
+}
+
+[data-theme="material"] .sec-num {
+  color: var(--muted);
+}
+
+/* Известь вместо чистого фона бумаги: полосы начинают чередоваться.
+   В разметке класса --surface нет, поэтому красим конкретные секции —
+   «Этапы» и «Вопросы» получают подложку, остальные остаются на бумаге. */
+[data-theme="material"] #process,
+[data-theme="material"] #faq {
+  background: var(--surface);
+}
+
+/* Итог калькулятора лежит на тёмной карточке (background: var(--ink)),
+   поэтому холодный минерал здесь не годится (2.21:1) — берём декоративный
+   светлый тон: 7.82:1 в A и 9.44:1 в B. */
+[data-theme="material"] .calc__total {
+  color: var(--accent-decor);
+}
+
+/* Ошибки и успех формы тоже через токены.
+   В globals.css были захардкожены #b4453b и #2f6b45. */
+[data-theme="material"] .field__error,
+[data-theme="material"] .form__status[data-state="error"] {
+  color: var(--danger);
+}
+
+[data-theme="material"] .form__status[data-state="ok"] {
+  color: var(--success);
+}
+
+/* ------------------------------------------------------------
+   B. «МИНЕРАЛ» — холодный камень Кисловодска
+   ------------------------------------------------------------ */
+[data-theme="mineral"] {
+  --ink: #16191a;
+  --paper: #eef0ee;
+
+  --surface: #e2e8e8;
+  --line: #cfd8d8;
+
+  --accent-decor: #a9c2c6;
+  --accent: #3f6a70; /* 5.23:1 на своей бумаге */
+  --accent-ink: #34565c; /* 6.97:1 */
+  --accent-strong: #2a464a; /* 8.84:1, белый на нём 10.13 */
+  --accent-deep: #24403f;
+  --mineral: #24403f;
+  --muted: #5e6668; /* 5.13:1 */
+
+  /* Тот же подъём прозрачности, что в A: 4.43 → 5.72. */
+  --ink-60: color-mix(in srgb, var(--ink) 66%, transparent);
+
+  --danger: #a63f36;
+  --success: #276044;
+}
+
+/* Номер преимущества в тёмной секции: холодный минерал здесь читается
+   на 9.44:1 (сам акцент на тёмном дал бы 2.95 — провал). */
+[data-theme="mineral"] .advantage__num {
+  color: var(--accent-decor);
+}
+
+[data-theme="mineral"] .section--ink .sec-num,
+[data-theme="mineral"] .section--ink .muted {
+  color: var(--paper-60);
+}
+
+[data-theme="mineral"] .btn--primary:hover,
+[data-theme="mineral"] .btn--light:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  color: var(--white);
+}
+
+[data-theme="mineral"] .sec-num::after {
+  background: var(--line);
+}
+
+[data-theme="mineral"] .marquee__item::after,
+[data-theme="mineral"] .hero__kicker::before {
+  background: var(--accent);
+}
+
+[data-theme="mineral"] #process,
+[data-theme="mineral"] #faq {
+  background: var(--surface);
+}
+
+[data-theme="mineral"] .calc__total {
+  color: var(--accent-decor);
+}
+
+[data-theme="mineral"] .field__error,
+[data-theme="mineral"] .form__status[data-state="error"] {
+  color: var(--danger);
+}
+
+[data-theme="mineral"] .form__status[data-state="ok"] {
+  color: var(--success);
+}
+
+/* ------------------------------------------------------------
+   C. Грейд фотографий
+   Стоковые интерьеры сняты в разных температурах и дерутся друг
+   с другом. Один общий грейд сводит их в один мир: чуть ниже
+   насыщенность, чуть теплее свет, чуть плотнее тени.
+
+   Это CSS-приближение для сравнения на глаз; финальный вариант
+   делается sharp в scripts/ (одинаковый результат и для og:image).
+   ------------------------------------------------------------ */
+[data-grade="warm"] .hero__figure img,
+[data-grade="warm"] .about__media img,
+[data-grade="warm"] .service__media img,
+[data-grade="warm"] .work-card__media img,
+[data-grade="warm"] .quote__media img,
+[data-grade="warm"] .design-card img,
+[data-grade="warm"] .design-teaser__card img,
+[data-grade="warm"] .lightbox__figure img {
+  /* sepia(0.07) менял пиксели на 3/255 — глазом это ноль.
+     Замеренный набор: насыщенность −0.05, тёплый сдвиг ΔB +8,
+     видимая разница на 87% площади кадра. */
+  filter: saturate(0.75) contrast(1.06) brightness(1.02) sepia(0.32)
+    hue-rotate(-8deg);
+}
+
+/* ------------------------------------------------------------
+   C2. Читаемость текста поверх фотографий
+
+   Прямой замер по пикселям показал: светлая подпись на мобильной
+   карточке даёт 1.52:1 в худшей зоне, на тизере дизайн-проектов —
+   1.94:1. Причина — градиент под подписью слишком быстро уходит в
+   прозрачность. Усиливаем его и растягиваем, не меняя композицию.
+   ------------------------------------------------------------ */
+@media (max-width: 767px) {
+  .work-card__overlay {
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ink) 90%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 74%, transparent) 42%,
+      transparent 82%
+    );
+  }
+}
+
+.design-teaser__card span {
+  padding-top: 3.25rem;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--ink) 92%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 68%, transparent) 48%,
+    transparent 100%
+  );
+}
+
+/* ------------------------------------------------------------
+   D. MOTION: «одна линия» — фокусный момент страницы
+
+   Компания называется ЛИНИЯ, поэтому движение берётся из ремесла:
+   по секции прочерчивается волосяная линия слева направо, и только
+   после неё из-под маски поднимается заголовок. Одна линия на
+   секцию, только transform и opacity.
+   ------------------------------------------------------------ */
+:root {
+  /* Шкала длительностей вместо хардкода 160/180/200/220/240/260/300/320. */
+  --dur-1: 140ms; /* отклик на нажатие */
+  --dur-2: 220ms; /* смена состояния */
+  --dur-3: 380ms; /* оверлей, выезд линии */
+  --dur-4: 620ms; /* авторский вход */
+}
+
+/* Линия секции рисуется псевдоэлементом у шапки —
+   разметку менять не нужно. */
+[data-motion="line"] .sec-head {
+  position: relative;
+}
+
+[data-motion="line"] .sec-head::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1.25rem;
+  width: min(12rem, 34%);
+  height: 1px;
+  background: var(--accent-decor, var(--accent));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-4) var(--ease);
+}
+
+[data-js="1"][data-motion="line"] .sec-head.is-revealed::before {
+  transform: scaleX(1);
+}
+
+/* Заголовок и лид поднимаются из-под маски после линии. */
+[data-js="1"][data-motion="line"] .sec-head > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-4) var(--ease),
+    transform var(--dur-4) var(--ease);
+}
+
+[data-js="1"][data-motion="line"] .sec-head.is-revealed > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* Ступень задержки: линия первой, за ней заголовок, за ним лид. */
+[data-js="1"][data-motion="line"] .sec-head.is-revealed > *:nth-child(1) {
+  transition-delay: 90ms;
+}
+
+[data-js="1"][data-motion="line"] .sec-head.is-revealed > *:nth-child(2) {
+  transition-delay: 160ms;
+}
+
+[data-js="1"][data-motion="line"] .sec-head.is-revealed > *:nth-child(3) {
+  transition-delay: 230ms;
+}
+
+/* Вход героя: заголовок выезжает из маски, за ним лид, кнопки, фото. */
+[data-js="1"][data-motion="line"] .hero h1 {
+  animation: line-hero-h1 var(--dur-4) var(--ease) both;
+}
+
+[data-js="1"][data-motion="line"] .hero__lead {
+  animation: line-hero-fade var(--dur-4) var(--ease) 140ms both;
+}
+
+[data-js="1"][data-motion="line"] .hero .btn-row {
+  animation: line-hero-fade var(--dur-4) var(--ease) 220ms both;
+}
+
+[data-js="1"][data-motion="line"] .hero__figure {
+  animation: line-hero-media 780ms var(--ease) 90ms both;
+}
+
+@keyframes line-hero-h1 {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 -12% 0);
+    transform: none;
+  }
+}
+
+@keyframes line-hero-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes line-hero-media {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Карточка: тот же мотив — линия выезжает под подписью. */
+[data-motion="line"] .work-card__caption::after,
+[data-motion="line"] .service .service__body::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-top: 0.9rem;
+  background: var(--accent-decor, var(--accent));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-3) var(--ease);
+}
+
+[data-motion="line"] .work-card:hover .work-card__caption::after,
+[data-motion="line"] .service:hover .service__body::after {
+  transform: scaleX(1);
+}
+
+/* ------------------------------------------------------------
+   E. Бегущая строка: WCAG 2.2.2
+   Движущийся контент дольше пяти секунд обязан останавливаться:
+   пауза при наведении и фокусе, остановка вне экрана, кнопка паузы.
+   Постоянный will-change снят.
+   ------------------------------------------------------------ */
+.marquee__track {
+  will-change: auto;
+}
+
+.marquee {
+  position: relative;
+}
+
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track,
+.marquee.is-offscreen .marquee__track,
+.marquee.is-paused .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__toggle {
+  position: absolute;
+  right: var(--gutter);
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--paper-16);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2) var(--ease),
+    background-color var(--dur-2) var(--ease);
+}
+
+.marquee__toggle:hover {
+  border-color: var(--accent);
+}
+
+.marquee__toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Иконка: две полоски в покое, треугольник в паузе. */
+.marquee__icon-play {
+  display: none;
+}
+
+.marquee.is-paused .marquee__toggle .marquee__icon-pause {
+  display: none;
+}
+
+.marquee.is-paused .marquee__toggle .marquee__icon-play {
+  display: block;
+}
+
+/* ------------------------------------------------------------
+   F. prefers-reduced-motion: убираем движение, оставляем смысл
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-motion="line"] .sec-head::before,
+  [data-motion="line"] .work-card__caption::after,
+  [data-motion="line"] .service .service__body::after {
+    transform: none;
+  }
+
+  [data-js="1"][data-motion="line"] .sec-head > *,
+  [data-js="1"][data-motion="line"] .hero h1,
+  [data-js="1"][data-motion="line"] .hero__lead,
+  [data-js="1"][data-motion="line"] .hero .btn-row,
+  [data-js="1"][data-motion="line"] .hero__figure {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   G. Панель переключения вариантов (только эта ветка)
+   ------------------------------------------------------------ */
+.variant-switch {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 95;
+  display: grid;
+  gap: 0.55rem;
+  width: min(21rem, calc(100% - 2rem));
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--ink-16);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.14);
+  font-family: var(--font-text);
+  font-size: 0.75rem;
+  color: var(--ink);
+  backdrop-filter: blur(6px);
+}
+
+.variant-switch__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.variant-switch__hide {
+  border: 0;
+  background: none;
+  padding: 0 0 0 0.5rem;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.variant-switch__group {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.variant-switch__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.variant-switch__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.variant-switch__btn {
+  min-height: 2.25rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--ink-16);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2) var(--ease),
+    background-color var(--dur-2) var(--ease);
+}
+
+.variant-switch__btn:hover {
+  border-color: var(--ink);
+}
+
+.variant-switch__btn[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Свёрнутая панель: только кнопка «Варианты». */
+.variant-switch__open {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 95;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--ink-16);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.14);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  .variant-switch {
+    left: 0.5rem;
+    bottom: 5.25rem;
+    width: calc(100% - 1rem);
+  }
+
+  .variant-switch__open {
+    left: 0.5rem;
+    bottom: 5.25rem;
+  }
+}
