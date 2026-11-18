@@ -5,7 +5,8 @@
  *
  * Фотографии берутся из существующей базы (projects / project_photos).
  * Ничего не выдумываем: если у проекта нет фотографий, он не показывается.
- * Подписи честные — это примеры работ, а не «объект №N».
+ * Под каждой плиткой выводим то, что уже лежит в данных проекта: город,
+ * площадь и срок — это и есть доказательство, а не подпись «объект №N».
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -14,8 +15,21 @@ export type WorkItem = {
   slug: string;
   title: string;
   serviceTitle: string | null;
+  /** Город объекта, если известен */
+  location: string | null;
+  /** Площадь, например «42 м²» */
+  area: string | null;
+  /** Срок работ, например «6 недель» */
+  duration: string | null;
+  /** Короткое описание состава работ */
+  description: string | null;
   photos: { file: string; alt: string }[];
 };
+
+/** «Кисловодск · 42 м² · 6 недель» — только те поля, что реально заполнены. */
+function joinFacts(...parts: (string | null | undefined)[]): string {
+  return parts.filter(Boolean).join(" · ");
+}
 
 type Props = {
   items: WorkItem[];
@@ -35,14 +49,24 @@ export function Portfolio({ items }: Props) {
 
   // Плоский список фотографий для лайтбокса.
   const flat = useMemo(() => {
-    const out: { file: string; alt: string; title: string; service: string }[] = [];
+    const out: {
+      file: string;
+      alt: string;
+      title: string;
+      service: string;
+      facts: string;
+      description: string;
+    }[] = [];
     for (const p of withPhotos) {
+      const facts = joinFacts(p.location, p.area, p.duration);
       for (const ph of p.photos) {
         out.push({
           file: ph.file,
           alt: ph.alt,
           title: p.title,
           service: p.serviceTitle ?? "",
+          facts,
+          description: p.description ?? "",
         });
       }
     }
@@ -124,46 +148,58 @@ export function Portfolio({ items }: Props) {
       ) : null}
 
       <div className="work-grid">
-        {visible.map((p) => (
-          <button
-            key={p.slug}
-            type="button"
-            className="work-card"
-            onClick={() => openAt(p.photos[0].file)}
-            aria-label={`Открыть фото: ${p.title}`}
-          >
-            <span className="work-card__media">
-              <img
-                src={p.photos[0].file}
-                alt={p.photos[0].alt}
-                loading="lazy"
-                decoding="async"
-                width={1280}
-                height={960}
-              />
-              <span className="work-card__overlay">
-                <span className="work-card__caption">
-                  <strong>{p.title}</strong>
-                  {p.serviceTitle ? <span>{p.serviceTitle}</span> : null}
-                </span>
-                <span className="work-card__zoom" aria-hidden="true">
-                  <svg width="14" height="14" viewBox="0 0 14 14">
-                    <path
-                      d="M7 1v12M1 7h12"
-                      stroke="currentColor"
-                      strokeWidth="1.4"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+        {visible.map((p) => {
+          const facts = joinFacts(p.location, p.area, p.duration);
+          return (
+            <button
+              key={p.slug}
+              type="button"
+              className="work-card"
+              onClick={() => openAt(p.photos[0].file)}
+              aria-label={`Открыть фото: ${p.title}${
+                facts ? ` — ${facts}` : ""
+              }`}
+            >
+              <span className="work-card__media">
+                <img
+                  src={p.photos[0].file}
+                  alt={p.photos[0].alt}
+                  loading="lazy"
+                  decoding="async"
+                  width={1280}
+                  height={960}
+                />
+                <span className="work-card__overlay">
+                  <span className="work-card__caption">
+                    <strong>{p.title}</strong>
+                    {p.serviceTitle ? <span>{p.serviceTitle}</span> : null}
+                    {facts ? (
+                      <span className="work-card__facts">{facts}</span>
+                    ) : null}
+                  </span>
+                  <span className="work-card__zoom" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 14 14">
+                      <path
+                        d="M7 1v12M1 7h12"
+                        stroke="currentColor"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </span>
                 </span>
               </span>
-            </span>
-            <span className="work-card__meta">
-              <strong>{p.title}</strong>
-              {p.serviceTitle ? <span>{p.serviceTitle}</span> : null}
-            </span>
-          </button>
-        ))}
+              <span className="work-card__meta">
+                <strong>{p.title}</strong>
+                {facts ? (
+                  <span className="work-card__facts">{facts}</span>
+                ) : p.serviceTitle ? (
+                  <span>{p.serviceTitle}</span>
+                ) : null}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {current ? (
@@ -235,10 +271,19 @@ export function Portfolio({ items }: Props) {
           <figure className="lightbox__figure">
             <img className="lightbox__img" src={current.file} alt={current.alt} />
             <figcaption className="lightbox__caption">
-              <strong>{current.title}</strong>
-              <span>
-                {current.service}
-                {openIndex !== null ? ` · ${openIndex + 1} из ${flat.length}` : ""}
+              <span className="lightbox__caption-main">
+                <strong>{current.title}</strong>
+                <span>
+                  {[current.service, current.facts].filter(Boolean).join(" · ")}
+                  {openIndex !== null
+                    ? ` · ${openIndex + 1} из ${flat.length}`
+                    : ""}
+                </span>
+                {current.description ? (
+                  <span className="lightbox__caption-text">
+                    {current.description}
+                  </span>
+                ) : null}
               </span>
             </figcaption>
           </figure>

@@ -716,15 +716,20 @@ p {
 }
 
 .hero h1 {
-  /* Кегль подобран по колонке: 3.9vw + расширенная колонка дают
-     две строки на 1200–1600 и три на мобильных.
+  /* H1 — самая крупная ступень на странице: он должен быть заметнее
+     заголовков секций и тем более финального CTA (раньше было
+     наоборот: 56px против 60px и 72px). На 1200–1600 заголовок
+     ложится в две строки.
      hyphens/break-word намеренно отключены: русские слова
-     рвались по слогам («д / еталь»). */
+     рвались по слогам («д / еталь»).
+     text-wrap: balance вместо pretty — pretty оставлял на последней
+     строке одно слово «работ» (28% ширины колонки). balance
+     выравнивает строки: заполнение 74–85% без сироты. */
   max-width: none;
-  line-height: 1.04;
-  font-size: clamp(2.125rem, 3.9vw, 3.5rem);
+  line-height: 1.02;
+  font-size: clamp(2.375rem, 4.9vw, 4.25rem);
   letter-spacing: -0.035em;
-  text-wrap: pretty;
+  text-wrap: balance;
   hyphens: manual;
   overflow-wrap: normal;
   word-break: normal;
@@ -1278,6 +1283,16 @@ p {
   color: var(--paper-60);
 }
 
+/* Факты объекта под подписью: город, площадь, срок. Это доказательство,
+   поэтому кегль читаемый, а не микро-капс как у категории. */
+.work-card__caption .work-card__facts {
+  font-size: var(--t-small);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--paper);
+  opacity: 0.92;
+}
+
 .work-card__zoom {
   display: grid;
   place-items: center;
@@ -1311,6 +1326,18 @@ p {
   text-transform: uppercase;
   color: var(--muted);
   white-space: nowrap;
+}
+
+/* Подпись под плиткой на тач-устройствах: факты объекта вместо категории —
+   категория уже видна в фильтрах. */
+.work-card__meta .work-card__facts {
+  font-size: var(--t-small);
+  letter-spacing: 0;
+  text-transform: none;
+  /* --ink-60 на бумаге даёт ≈4.4:1 — ниже AA для 14px. --ink-80 читается. */
+  color: var(--ink-80);
+  white-space: normal;
+  text-align: right;
 }
 
 /* Лайтбокс */
@@ -1351,8 +1378,33 @@ p {
   font-size: var(--t-small);
 }
 
+.lightbox__caption-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.lightbox__caption-main strong {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* Описание состава работ: в лайтбоксе есть место рассказать, что делали. */
+.lightbox__caption-text {
+  max-width: 62ch;
+  color: var(--paper-60);
+  line-height: 1.45;
+}
+
 .lightbox__caption span {
   color: var(--paper-60);
+}
+
+.lightbox__caption .lightbox__caption-main {
+  color: var(--paper);
 }
 
 .lightbox__close,
@@ -2225,8 +2277,10 @@ p {
   max-width: 52rem;
 }
 
+/* Финальный CTA не громче H1: иерархия держится на одной шкале,
+   прощание не должно быть самым крупным словом страницы. */
 .cta h2 {
-  font-size: clamp(2.25rem, 5.4vw, 4.5rem);
+  font-size: var(--t-h2);
   letter-spacing: -0.028em;
 }
 

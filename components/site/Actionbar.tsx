@@ -3,10 +3,10 @@
 /**
  * Мобильная панель быстрых действий (заявка + звонок).
  *
- * Видна только на телефонах (< 768px): после прокрутки первого экрана
- * выезжает снизу, у верха страницы прячется. Показ управляется
- * атрибутом data-shown — transform и стили лежат в globals.css.
- * Кнопка заявки открывает LeadModal через делегированный
+ * Видна только на телефонах (< 768px) и с первого экрана: на узком экране
+ * телефон из шапки скрыт, и без панели позвонить можно только через меню.
+ * Показ управляется атрибутом data-shown — transform и стили лежат
+ * в globals.css. Кнопка заявки открывает LeadModal через делегированный
  * data-lead-open, отдельной логики не нужно.
  */
 import { useEffect, useRef } from "react";
@@ -19,27 +19,17 @@ export function Actionbar({ phoneHref }: { phoneHref: string }) {
     if (!el) return;
 
     const mq = window.matchMedia("(max-width: 767px)");
-    let raf = 0;
 
+    // Панель нужна с самого верха: это единственный способ позвонить
+    // в один тап на телефоне. Прячем только на десктопе.
     const update = () => {
-      raf = 0;
-      const pastHero = window.scrollY > window.innerHeight * 0.7;
-      el.dataset.shown = mq.matches && pastHero ? "true" : "false";
-    };
-
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
+      el.dataset.shown = mq.matches ? "true" : "false";
     };
 
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    mq.addEventListener("change", onScroll);
+    mq.addEventListener("change", update);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      mq.removeEventListener("change", onScroll);
-      if (raf) cancelAnimationFrame(raf);
+      mq.removeEventListener("change", update);
     };
   }, []);
 
