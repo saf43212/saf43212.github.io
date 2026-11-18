@@ -7,7 +7,7 @@
  *
  *  - [data-reveal] и .sec-head получают .is-visible / .is-revealed при входе
  *    в вьюпорт и больше не отслеживаются (анимация одноразовая). Стили
- *    появления живут в app/variants.css под [data-motion="line"].
+ *    появления живут в app/globals.css, раздел 22.
  *  - .marquee получает .is-offscreen, когда уходит с экрана: движение вне
  *    вьюпорта бессмысленно, а WCAG 2.2.2 требует возможности остановить.
  *  - Клик по .marquee__toggle переключает .is-paused и aria-pressed,
