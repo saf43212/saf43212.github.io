@@ -163,9 +163,6 @@ export default async function HomePage() {
     slug: p.slug,
     title: p.title,
     serviceTitle: p.serviceTitle,
-    location: p.location,
-    area: p.area,
-    duration: p.duration,
     description: p.description,
     photos: p.photos.map((ph) => ({ file: ph.file, alt: ph.alt })),
   }));
@@ -497,9 +494,9 @@ export default async function HomePage() {
               </div>
               <div className="sec-head__aside">
                 <p className="t-lead">
-                  Под каждым кадром — характер работ, город, площадь и срок.
-                  Диапазон стоимости считает калькулятор, точную цену даёт смета
-                  после замера.
+                  Под каждым кадром — название объекта и вид работ. Диапазон
+                  стоимости считает калькулятор, точную цену даёт смета после
+                  замера.
                 </p>
               </div>
             </div>

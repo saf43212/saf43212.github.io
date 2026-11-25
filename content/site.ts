@@ -308,7 +308,7 @@ export const projects: ProjectItem[] = [
     budget: "по смете",
     description: "Выравнивание стен и потолков штукатуркой, подготовка под чистовую отделку.",
     photos: [
-      { file: "/assets/img/shtukaturka-01.webp", alt: "Штукатурные работы: мастер выравнивает стену" },
+      { file: "/assets/img/shtukaturka-01.webp", alt: "Штукатурные работы: фактурная штукатурка под каменный шпон" },
       { file: "/assets/img/shtukaturka-02.webp", alt: "Штукатурные работы: помещение в процессе" },
       { file: "/assets/img/shtukaturka-03.webp", alt: "Штукатурные работы: работа мастера в комнате" },
     ],

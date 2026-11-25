@@ -5,8 +5,9 @@
  *
  * Фотографии берутся из существующей базы (projects / project_photos).
  * Ничего не выдумываем: если у проекта нет фотографий, он не показывается.
- * Под каждой плиткой выводим то, что уже лежит в данных проекта: город,
- * площадь и срок — это и есть доказательство, а не подпись «объект №N».
+ * Под плиткой — название объекта и вид работ. Город, площадь и срок
+ * сознательно не выводим: на карточке это читалось как обещание по срокам
+ * и ценам, которого мы не можем подтвердить.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -15,21 +16,10 @@ export type WorkItem = {
   slug: string;
   title: string;
   serviceTitle: string | null;
-  /** Город объекта, если известен */
-  location: string | null;
-  /** Площадь, например «42 м²» */
-  area: string | null;
-  /** Срок работ, например «6 недель» */
-  duration: string | null;
   /** Короткое описание состава работ */
   description: string | null;
   photos: { file: string; alt: string }[];
 };
-
-/** «Кисловодск · 42 м² · 6 недель» — только те поля, что реально заполнены. */
-function joinFacts(...parts: (string | null | undefined)[]): string {
-  return parts.filter(Boolean).join(" · ");
-}
 
 type Props = {
   items: WorkItem[];
@@ -54,18 +44,15 @@ export function Portfolio({ items }: Props) {
       alt: string;
       title: string;
       service: string;
-      facts: string;
       description: string;
     }[] = [];
     for (const p of withPhotos) {
-      const facts = joinFacts(p.location, p.area, p.duration);
       for (const ph of p.photos) {
         out.push({
           file: ph.file,
           alt: ph.alt,
           title: p.title,
           service: p.serviceTitle ?? "",
-          facts,
           description: p.description ?? "",
         });
       }
@@ -149,7 +136,6 @@ export function Portfolio({ items }: Props) {
 
       <div className="work-grid">
         {visible.map((p) => {
-          const facts = joinFacts(p.location, p.area, p.duration);
           return (
             <button
               key={p.slug}
@@ -157,7 +143,7 @@ export function Portfolio({ items }: Props) {
               className="work-card"
               onClick={() => openAt(p.photos[0].file)}
               aria-label={`Открыть фото: ${p.title}${
-                facts ? ` — ${facts}` : ""
+                p.serviceTitle ? ` — ${p.serviceTitle}` : ""
               }`}
             >
               <span className="work-card__media">
@@ -173,9 +159,6 @@ export function Portfolio({ items }: Props) {
                   <span className="work-card__caption">
                     <strong>{p.title}</strong>
                     {p.serviceTitle ? <span>{p.serviceTitle}</span> : null}
-                    {facts ? (
-                      <span className="work-card__facts">{facts}</span>
-                    ) : null}
                   </span>
                   <span className="work-card__zoom" aria-hidden="true">
                     <svg width="14" height="14" viewBox="0 0 14 14">
@@ -191,11 +174,7 @@ export function Portfolio({ items }: Props) {
               </span>
               <span className="work-card__meta">
                 <strong>{p.title}</strong>
-                {facts ? (
-                  <span className="work-card__facts">{facts}</span>
-                ) : p.serviceTitle ? (
-                  <span>{p.serviceTitle}</span>
-                ) : null}
+                {p.serviceTitle ? <span>{p.serviceTitle}</span> : null}
               </span>
             </button>
           );
@@ -274,9 +253,11 @@ export function Portfolio({ items }: Props) {
               <span className="lightbox__caption-main">
                 <strong>{current.title}</strong>
                 <span>
-                  {[current.service, current.facts].filter(Boolean).join(" · ")}
+                  {current.service}
                   {openIndex !== null
-                    ? ` · ${openIndex + 1} из ${flat.length}`
+                    ? `${current.service ? " · " : ""}${openIndex + 1} из ${
+                        flat.length
+                      }`
                     : ""}
                 </span>
                 {current.description ? (

@@ -1344,16 +1344,6 @@ p {
   color: var(--paper-60);
 }
 
-/* Факты объекта под подписью: город, площадь, срок. Это доказательство,
-   поэтому кегль читаемый, а не микро-капс как у категории. */
-.work-card__caption .work-card__facts {
-  font-size: var(--t-small);
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--paper);
-  opacity: 0.92;
-}
-
 .work-card__zoom {
   display: grid;
   place-items: center;
@@ -1387,18 +1377,6 @@ p {
   text-transform: uppercase;
   color: var(--muted);
   white-space: nowrap;
-}
-
-/* Подпись под плиткой на тач-устройствах: факты объекта вместо категории —
-   категория уже видна в фильтрах. */
-.work-card__meta .work-card__facts {
-  font-size: var(--t-small);
-  letter-spacing: 0;
-  text-transform: none;
-  /* --ink-60 на бумаге даёт ≈4.4:1 — ниже AA для 14px. --ink-80 читается. */
-  color: var(--ink-80);
-  white-space: normal;
-  text-align: right;
 }
 
 /* Лайтбокс */
