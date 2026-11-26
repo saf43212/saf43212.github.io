@@ -326,7 +326,6 @@ export const projects: ProjectItem[] = [
     description: "Стяжка и наливной пол: выравнивание основания под укладку покрытия.",
     photos: [
       { file: "/assets/img/pol-01.webp", alt: "Наливной пол: заливка и выравнивание смеси" },
-      { file: "/assets/img/pol-02.webp", alt: "Наливной пол: выравнивание свежей смеси" },
     ],
     sort: 5,
   },

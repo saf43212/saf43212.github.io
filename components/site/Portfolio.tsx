@@ -37,29 +37,6 @@ export function Portfolio({ items }: Props) {
     [items]
   );
 
-  // Плоский список фотографий для лайтбокса.
-  const flat = useMemo(() => {
-    const out: {
-      file: string;
-      alt: string;
-      title: string;
-      service: string;
-      description: string;
-    }[] = [];
-    for (const p of withPhotos) {
-      for (const ph of p.photos) {
-        out.push({
-          file: ph.file,
-          alt: ph.alt,
-          title: p.title,
-          service: p.serviceTitle ?? "",
-          description: p.description ?? "",
-        });
-      }
-    }
-    return out;
-  }, [withPhotos]);
-
   const filters = useMemo(() => {
     const set = new Set<string>();
     for (const p of withPhotos) if (p.serviceTitle) set.add(p.serviceTitle);
@@ -73,6 +50,31 @@ export function Portfolio({ items }: Props) {
         : withPhotos.filter((p) => p.serviceTitle === filter),
     [filter, withPhotos]
   );
+
+  // Плоский список фотографий для лайтбокса. Строится по видимым карточкам,
+  // а не по всем проектам: иначе при включённом фильтре «N из M» считает
+  // снимки чужих разделов и стрелки уводят из выбранного вида работ.
+  const flat = useMemo(() => {
+    const out: {
+      file: string;
+      alt: string;
+      title: string;
+      service: string;
+      description: string;
+    }[] = [];
+    for (const p of visible) {
+      for (const ph of p.photos) {
+        out.push({
+          file: ph.file,
+          alt: ph.alt,
+          title: p.title,
+          service: p.serviceTitle ?? "",
+          description: p.description ?? "",
+        });
+      }
+    }
+    return out;
+  }, [visible]);
 
   const indexOf = (file: string) => flat.findIndex((f) => f.file === file);
 
